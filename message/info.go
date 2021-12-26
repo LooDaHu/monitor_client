@@ -51,7 +51,7 @@ type DiskInfo struct {
 }
 
 type Info interface {
-	GetInfo() (*interface{}, error)
+	GetInfo() (interface{}, error)
 }
 
 type Summary interface {
@@ -80,15 +80,15 @@ func (s SystemInfo) GetSystemInfo() (*SystemInfo, error) {
 		return nil, err
 	}
 	return &SystemInfo{
-		Host:    hostInfo,
-		Network: networkInfo,
-		CPU:     cpuInfo,
-		Memory:  memInfo,
-		Disk:    diskInfo,
+		Host:    hostInfo.(*HostInfo),
+		Network: networkInfo.(*NetworkInfo),
+		CPU:     cpuInfo.(*CPUInfo),
+		Memory:  memInfo.(*MemoryInfo),
+		Disk:    diskInfo.(*DiskInfo),
 	}, nil
 }
 
-func (h HostInfo) GetInfo() (*HostInfo, error) {
+func (h HostInfo) GetInfo() (interface{}, error) {
 	hostInfo, err := host.Info()
 	if err != nil {
 		utils.SugarLogger.Error("get host info error", err)
@@ -100,7 +100,7 @@ func (h HostInfo) GetInfo() (*HostInfo, error) {
 	}, nil
 }
 
-func (n NetworkInfo) GetInfo() (*NetworkInfo, error) {
+func (n NetworkInfo) GetInfo() (interface{}, error) {
 	networkCounter, err := net.IOCounters(false)
 	if err != nil || len(networkCounter) == 0 {
 		utils.SugarLogger.Error("get network info error", err)
@@ -116,7 +116,7 @@ func (n NetworkInfo) GetInfo() (*NetworkInfo, error) {
 	}, nil
 }
 
-func (c CPUInfo) GetInfo() (*CPUInfo, error) {
+func (c CPUInfo) GetInfo() (interface{}, error) {
 	cpuInfo, err := cpu.Info()
 	if err != nil || len(cpuInfo) == 0 {
 		utils.SugarLogger.Error("get cpu info error", err)
@@ -146,7 +146,7 @@ func (c CPUInfo) GetInfo() (*CPUInfo, error) {
 	}, nil
 }
 
-func (c MemoryInfo) GetInfo() (*MemoryInfo, error) {
+func (c MemoryInfo) GetInfo() (interface{}, error) {
 	memory, err := mem.VirtualMemory()
 	if err != nil {
 		utils.SugarLogger.Error("get mem info error", err)
@@ -164,7 +164,7 @@ func (c MemoryInfo) GetInfo() (*MemoryInfo, error) {
 	}, nil
 }
 
-func (c DiskInfo) GetInfo() (*DiskInfo, error) {
+func (c DiskInfo) GetInfo() (interface{}, error) {
 	diskInfo, err := disk.Usage("/")
 	if err != nil {
 		utils.SugarLogger.Error("get disk info error", err)
