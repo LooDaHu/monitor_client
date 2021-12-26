@@ -1,25 +1,30 @@
 package main
 
 import (
+	"client/message"
 	"client/utils"
 	"time"
 )
 
 func main() {
-	utils.InitHostIP()
+	err := utils.InitConfig()
+	if err != nil {
+		return
+	}
 	utils.InitHTTPClient()
 	utils.InitLogger()
-	timeTicker := time.NewTicker(time.Minute)
-	go func() {
-		for {
-			select {
-			case <-timeTicker.C:
-				sysInfo := utils.GetSysInfo()
-				err := utils.HttpClient(sysInfo)
-				if err != nil {
-					continue
-				}
+	sysInfo := new(message.SystemInfo)
+	for {
+		go func() {
+			info, err := sysInfo.GetSystemInfo()
+			if err != nil {
+				return
 			}
-		}
-	}()
+			err = utils.HttpClient(info)
+			if err != nil {
+				return
+			}
+		}()
+		time.Sleep(time.Minute)
+	}
 }

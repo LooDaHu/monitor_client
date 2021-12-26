@@ -9,13 +9,11 @@ import (
 	"strings"
 )
 
-const (
-	ServerAddress        = "servername.com"
-	KUploadSystemInfoURL = "/system/add"
-	AppCode              = "1234567890"
-)
+const KUploadSystemInfoURL = "/system/add"
 
-var client *http.Client
+var (
+	client *http.Client
+)
 
 func InitHTTPClient() {
 	client = &http.Client{}
@@ -29,14 +27,14 @@ func HttpClient(data interface{}) error {
 		return MarshalError
 	}
 	req, err := http.NewRequest("POST",
-		strings.Join([]string{"https://", ServerAddress, KUploadSystemInfoURL}, ""),
+		strings.Join([]string{"https://", GlobalConfig.HostName, KUploadSystemInfoURL}, ""),
 		bytes.NewReader(jsonData))
 	if err != nil {
 		SugarLogger.Error("HTTP Request Error @HttpClient", err)
 		return HTTPError
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", strings.Join([]string{"APPCODE", AppCode}, " "))
+	req.Header.Set("Authorization", strings.Join([]string{GlobalConfig.AppId, GlobalConfig.AppCode}, " "))
 
 	resp, err := client.Do(req)
 
