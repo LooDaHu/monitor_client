@@ -132,7 +132,7 @@ func (c CPUInfo) GetInfo() (interface{}, error) {
 		utils.SugarLogger.Error("get cpu info error", err)
 		return nil, err
 	}
-	percent, err := cpu.Percent(time.Minute, false)
+	percent, err := cpu.Percent(time.Second, false)
 	if err != nil || len(percent) == 0 {
 		utils.SugarLogger.Error("get cpu info error", err)
 		return nil, err
@@ -180,7 +180,9 @@ func GetOutboundIP() *IP {
 	conn, err := Dial("udp", utils.GlobalConfig.HostName)
 	if err != nil {
 		utils.SugarLogger.Error("unable to access server", err)
-		panic("unable to access server, quit")
+		//panic("unable to access server, quit")
+		hostIp := IPv4(127, 0, 0, 1)
+		return &hostIp
 	}
 	defer conn.Close()
 
